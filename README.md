@@ -1,0 +1,2 @@
+# mirai_http_python
+一个简单的用于和miraiQQ机器人框架的HTTP接口对接的python框架
