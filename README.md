@@ -3,7 +3,8 @@
 * [x] 认证相关API
 * [x] 消息相关API  
 * [x] 事件相关EVENT
-* [ ] 管理相关(TODO)
+* [x] 管理相关
+* [ ] 简化、封装调用方式
 
 A simple code:
 ```python3
