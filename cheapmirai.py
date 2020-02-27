@@ -1,7 +1,7 @@
 import requests,json
 import time
-from operator import methodcaller
 import traceback
+import threading
 
 class BOT:
     def __init__(self,url,qq,authKey):
@@ -9,13 +9,20 @@ class BOT:
         self.sessionKey = None
         self.url = url
         self.authKey = authKey
+        self.connecterrmsg = None
+        self.keepwait = True
+
     def connect(self):
         self.disconnect()
         print("request:","auth",{"authKey": self.authKey})
         res = requests.post(url = self.url+"/auth",json = {"authKey": self.authKey})
-        print("response:","auth",res.text)
-        res = res.json()
+        try:
+            res = res.json()
+        except:
+            return False
+        print("response:","auth",res)
         if res['code'] != 0:
+            connecterrmsg = "error log:" + "get session failed"
             print("error log:","get session failed")
         else:
             print("request:","verify",{"sessionKey": res['session'],"qq": self.qq})
@@ -26,16 +33,20 @@ class BOT:
                 self.sessionKey = res['session']
                 return True
             else:
+                connecterrmsg = "error log:" + "verify session failed"
                 print("error log:","verify session failed")
         return False
+
     def disconnect(self):
         if self.sessionKey != None:
             print("request:","release",{"sessionKey": self.sessionKey,"qq": self.qq})
             res = requests.post(url = self.url+"/release",json = {"sessionKey": self.sessionKey,"qq": self.qq})
             print("response:","release",res.text)
             self.sessionKey = None
+
     def __del__(self):
         self.disconnect()
+
     def sendFriendMessage(self,target,messageChain,quote = None):
         req = {"sessionKey": self.sessionKey,"target": target,"messageChain":messageChain}
         if quote != None:
@@ -45,6 +56,7 @@ class BOT:
         ret = res.content
         print("response:","sendFriendMessage",str(ret))
         return ret
+
     def sendGroupMessage(self,target,messageChain,quote = None):
         req = {"sessionKey": self.sessionKey,"target": target,"messageChain":messageChain}
         if quote != None:
@@ -54,6 +66,7 @@ class BOT:
         ret = res.content
         print("response:","sendGroupMessage",str(ret))
         return ret
+
     def sendImageMessage(self,urls,target = None,qq = None,group = None):
         req = {"sessionKey": self.sessionKey,"urls":urls}
         if target != None:
@@ -209,8 +222,19 @@ class BOT:
         res = requests.get(url = self.url+"/fetchMessage?sessionKey="+self.sessionKey+"&count="+str(count))
         ret = res.content
         return ret
+
+
     def wait(self,timescale = 0.5):
-        while True:
+        class myThread (threading.Thread):
+            def __init__(self, func, bot, msg):
+                threading.Thread.__init__(self)
+                self.func = func
+                self.bot = bot
+                self.msg = msg
+            def run(self):
+                self.func(self.bot,self.msg)
+        self.keepwait = True
+        while self.keepwait:
             msgarr = []
             try:
                 ret = self._fetchMessage()
@@ -227,9 +251,15 @@ class BOT:
                     pass
                 try:
                     if f != None:
-                        f(self,msg)
+                        # f(self,msg)
+                        thread1 = myThread(f, self, msg)
+                        thread1.start()
                 except:
                     traceback.print_exc()
             time.sleep(timescale)
+
+    def breakwait(self):
+        self.keepwait = False
+
     def setEventFun(self,msgtype,func):
         exec("self."+ msgtype + "=func")
