@@ -15,7 +15,7 @@ class BOT:
     def connect(self):
         self.disconnect()
         print("request:","auth",{"authKey": self.authKey})
-        res = requests.post(url = self.url+"/auth",json = {"authKey": self.authKey})
+        res = requests.post(url = self.url+"/auth",json = {"authKey": self.authKey},timeout = 10)
         try:
             res = res.json()
         except:
@@ -26,7 +26,7 @@ class BOT:
             print("error log:","get session failed")
         else:
             print("request:","verify",{"sessionKey": res['session'],"qq": self.qq})
-            ress = requests.post(url = self.url+"/verify",json = {"sessionKey": res['session'],"qq": self.qq})
+            ress = requests.post(url = self.url+"/verify",json = {"sessionKey": res['session'],"qq": self.qq},timeout = 10)
             print("response:","verify",ress.text)
             ress = ress.json()
             if ress['code'] == 0:
@@ -40,7 +40,7 @@ class BOT:
     def disconnect(self):
         if self.sessionKey != None:
             print("request:","release",{"sessionKey": self.sessionKey,"qq": self.qq})
-            res = requests.post(url = self.url+"/release",json = {"sessionKey": self.sessionKey,"qq": self.qq})
+            res = requests.post(url = self.url+"/release",json = {"sessionKey": self.sessionKey,"qq": self.qq},timeout = 10)
             print("response:","release",res.text)
             self.sessionKey = None
 
@@ -52,9 +52,9 @@ class BOT:
         if quote != None:
             req["quote"] = quote
         print("request:","sendFriendMessage",req)
-        res = requests.post(url = self.url+"/sendFriendMessage",json = req)
+        res = requests.post(url = self.url+"/sendFriendMessage",json = req,timeout = 10)
         ret = res.content
-        print("response:","sendFriendMessage",str(ret))
+        print("response:","sendFriendMessage",res.text)
         return ret
 
     def sendGroupMessage(self,target,messageChain,quote = None):
@@ -62,7 +62,7 @@ class BOT:
         if quote != None:
             req["quote"] = quote
         print("request:","sendGroupMessage",req)
-        res = requests.post(url = self.url+"/sendGroupMessage",json = req)
+        res = requests.post(url = self.url+"/sendGroupMessage",json = req,timeout = 10)
         ret = res.content
         print("response:","sendGroupMessage",str(ret))
         return ret
@@ -76,23 +76,22 @@ class BOT:
         if group != None:
             req["group"] = group
         print("request:","sendImageMessage",req)
-        res = requests.post(url = self.url+"/sendImageMessage",json = req)
+        res = requests.post(url = self.url+"/sendImageMessage",json = req,timeout = 10)
         ret = res.content
         print("response:","sendImageMessage",str(ret))
         return ret
     
     def uploadImage(self,type,img):
         print("request:","uploadImage",{"type":type,"img":"..."})
-        res=requests.post(self.url+"/uploadImage", data = {"sessionKey": self.sessionKey,'type':type}, files={"img":img})
+        res=requests.post(self.url+"/uploadImage", data = {"sessionKey": self.sessionKey,'type':type}, files={"img":img},timeout = 10)
         ret = res.content
         print("response:","uploadImage",str(ret))
         return ret
 
     def recall(self,target):
-        '''未检验,缺少target(messaeId)'''
         req = {"sessionKey": self.sessionKey,"target":target}
         print("request:","recall",req)
-        res = requests.post(url = self.url+"/recall",json = req)
+        res = requests.post(url = self.url+"/recall",json = req,timeout = 10)
         ret = res.content
         print("response:","recall",str(ret))
         return ret
@@ -100,7 +99,7 @@ class BOT:
     def friendList(self):
         req = "/friendList?sessionKey="+self.sessionKey
         print("request:","friendList",req)
-        res = requests.get(self.url + req)
+        res = requests.get(self.url + req,timeout = 10)
         ret = res.content
         print("response:","friendList",str(ret))
         return ret
@@ -108,7 +107,7 @@ class BOT:
     def groupList(self):
         req = "/groupList?sessionKey="+self.sessionKey
         print("request:","groupList",req)
-        res = requests.get(self.url + req)
+        res = requests.get(self.url + req,timeout = 10)
         ret = res.content
         print("response:","groupList",str(ret))
         return ret
@@ -116,7 +115,7 @@ class BOT:
     def memberList(self,target):
         req = "/memberList?sessionKey="+self.sessionKey+"&target=" + str(target)
         print("request:","memberList",req)
-        res = requests.get(self.url + req)
+        res = requests.get(self.url + req,timeout = 10)
         ret = res.content
         print("response:","memberList",str(ret))
         return ret
@@ -124,7 +123,7 @@ class BOT:
     def muteAll(self,target):
         req = {"sessionKey": self.sessionKey,"target": target}
         print("request:","muteAll",req)
-        res = requests.post(url = self.url+"/muteAll",json = req)
+        res = requests.post(url = self.url+"/muteAll",json = req,timeout = 10)
         ret = res.content
         print("response:","muteAll",str(ret))
         return ret
@@ -132,7 +131,7 @@ class BOT:
     def unmuteAll(self,target):
         req = {"sessionKey": self.sessionKey,"target": target}
         print("request:","unmuteAll",req)
-        res = requests.post(url = self.url+"/unmuteAll",json = req)
+        res = requests.post(url = self.url+"/unmuteAll",json = req,timeout = 10)
         ret = res.content
         print("response:","unmuteAll",str(ret))
         return ret
@@ -145,7 +144,7 @@ class BOT:
             "time": time
             }
         print("request:","mute",req)
-        res = requests.post(url = self.url+"/mute",json = req)
+        res = requests.post(url = self.url+"/mute",json = req,timeout = 10)
         ret = res.content
         print("response:","mute",str(ret))
         return ret
@@ -157,7 +156,7 @@ class BOT:
             "memberId": memberId,
             }
         print("request:","unmute",req)
-        res = requests.post(url = self.url+"/unmute",json = req)
+        res = requests.post(url = self.url+"/unmute",json = req,timeout = 10)
         ret = res.content
         print("response:","unmute",str(ret))
         return ret
@@ -172,7 +171,7 @@ class BOT:
         if msg != None:
             req["msg"] = msg
         print("request:","kick",req)
-        res = requests.post(url = self.url+"/kick",json = req)
+        res = requests.post(url = self.url+"/kick",json = req,timeout = 10)
         ret = res.content
         print("response:","kick",str(ret))
         return ret
@@ -184,7 +183,7 @@ class BOT:
             "config": config
             }
         print("request:","groupConfig",req)
-        res = requests.post(url = self.url+"/groupConfig",json = req)
+        res = requests.post(url = self.url+"/groupConfig",json = req,timeout = 10)
         ret = res.content
         print("response:","groupConfig",str(ret))
         return ret
@@ -192,7 +191,7 @@ class BOT:
     def groupConfigGet(self,target):
         req = "/groupConfig?sessionKey="+self.sessionKey+"&target=" + str(target)
         print("request:","groupConfig",req)
-        res = requests.get(self.url + req)
+        res = requests.get(self.url + req,timeout = 10)
         ret = res.content
         print("response:","groupConfig",str(ret))
         return ret
@@ -205,7 +204,7 @@ class BOT:
             "info": info
             }
         print("request:","memberInfo",req)
-        res = requests.post(url = self.url+"/memberInfo",json = req)
+        res = requests.post(url = self.url+"/memberInfo",json = req,timeout = 10)
         ret = res.content
         print("response:","memberInfo",str(ret))
         return ret
@@ -213,26 +212,30 @@ class BOT:
     def memberInfoGet(self,target,memberId):
         req = "/memberInfo?sessionKey="+self.sessionKey+"&target=" + str(target)+"&memberId=" + str(memberId)
         print("request:","memberInfo",req)
-        res = requests.get(self.url + req)
+        res = requests.get(self.url + req,timeout = 10)
         ret = res.content
         print("response:","memberInfo",str(ret))
         return ret
     
     def _fetchMessage(self,count = 10):
-        res = requests.get(url = self.url+"/fetchMessage?sessionKey="+self.sessionKey+"&count="+str(count))
+        res = requests.get(url = self.url+"/fetchMessage?sessionKey="+self.sessionKey+"&count="+str(count),timeout = 10)
         ret = res.content
         return ret
 
 
     def wait(self,timescale = 0.5):
         class myThread (threading.Thread):
-            def __init__(self, func, bot, msg):
+            def __init__(self, funcvec, bot, msg):
                 threading.Thread.__init__(self)
-                self.func = func
+                self.funcvec = funcvec
                 self.bot = bot
                 self.msg = msg
             def run(self):
-                self.func(self.bot,self.msg)
+                for func in self.funcvec:
+                    try:
+                        func(self.bot,self.msg)
+                    except:
+                        traceback.print_exc()
         self.keepwait = True
         while self.keepwait:
             msgarr = []
@@ -261,5 +264,9 @@ class BOT:
     def breakwait(self):
         self.keepwait = False
 
-    def setEventFun(self,msgtype,func):
-        exec("self."+ msgtype + "=func")
+    def addEventFun(self,msgtype,func):
+        if(hasattr(self,msgtype)): # 如果没有这个回调函数
+            getattr(self,msgtype).append(func)
+        else:
+            setattr(self,msgtype,[])
+            getattr(self,msgtype).append(func)
