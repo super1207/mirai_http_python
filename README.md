@@ -9,32 +9,51 @@
 A simple code:
 ```python3
 from cheapmirai import BOT
+import json
+from io import BytesIO
+import requests
+import traceback
 
-def do_GroupMessage(bot,msg):
-    if msg['sender']['group'] == 987654321:
-        bot.sendGroupMessage(msg['sender']['group']['id'], [
-            { "type": "Plain", "text":"hello\n" },
-            { "type": "Plain", "text":"world" }
-        ])
 
+# 根据QQ号获取头像图片
+def getQQImg(qq):
+    url = 'http://q1.qlogo.cn/g?b=qq&nk={0}&s=640'.format(qq)
+    file_like = BytesIO(requests.get(url).content)
+    return file_like
+
+
+# 好友消息处理函数
 def do_FriendMessage(bot,msg):
-    bot.sendFriendMessage(
-        msg['sender']['id'],
-        [
-            { "type": "Plain", "text":"hello\n" },
-            { "type": "Plain", "text":"world" }
-        ]
-    )
+    if(msg['messageChain'][1]['text'] == '我的头像'):
+        print("Hello World")
+        # 获取好友头像的imageId
+        imageId = json.loads(
+            bot.uploadImage(
+                'friend',  # 如果是群聊，则为group
+                getQQImg(msg['sender']['id'])
+            )
+        )['imageId']
+        # 发送好友消息
+        bot.sendFriendMessage(
+            msg['sender']['id'], #要发送的好友
+            # 消息内容
+            [
+                { "type": "Image", "imageId":imageId},
+                { "type": "Plain", "text":"头像哦~" }
+            ]
+        )
 
 if __name__ == "__main__":
-    bot = BOT("http://localhost:8080",123456789,"InitKeyG9EnAitj")
-    bot.setEventFun("FriendMessage",do_FriendMessage)
-    bot.setEventFun("GroupMessage",do_GroupMessage)
+    # 登录
+    bot = BOT("http://localhost:8080",1736293901,"INITKEYKEXAqf1o")
+    # 绑定消息处理函数
+    bot.addEventFun("FriendMessage",do_FriendMessage)
     if bot.connect():
-        bot.wait()
+        bot.wait() #进入消息循环
         bot.disconnect()
+
 ```
 
-reference [https://github.com/mamoe/mirai/blob/master/mirai-api-http/README_CH.md](https://github.com/mamoe/mirai/blob/master/mirai-api-http/README_CH.md)
+reference [https://github.com/mamoe/mirai-api-http/blob/master/README.md](https://github.com/mamoe/mirai-api-http/blob/master/README.md)
 
 开源协议： AGPL-3.0
