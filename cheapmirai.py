@@ -241,7 +241,7 @@ class BOT:
             msgarr = []
             try:
                 ret = self._fetchMessage()
-                msgarr = json.loads(ret)
+                msgarr = json.loads(ret)['data']
             except:
                 pass
             for msg in msgarr:
