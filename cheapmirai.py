@@ -81,6 +81,16 @@ class BOT:
         print("response:","sendImageMessage",str(ret))
         return ret
     
+    def sendTempMessage(self,target,messageChain,quote = None):
+        req = {"sessionKey": self.sessionKey,"target": target,"messageChain":messageChain}
+        if quote != None:
+            req["quote"] = quote
+        print("request:","sendTempMessage",req)
+        res = requests.post(url = self.url+"/sendTempMessage",json = req,timeout = 10)
+        ret = res.content
+        print("response:","sendTempMessage",str(ret))
+        return ret
+    
     def uploadImage(self,type,img):
         print("request:","uploadImage",{"type":type,"img":"..."})
         res=requests.post(self.url+"/uploadImage", data = {"sessionKey": self.sessionKey,'type':type}, files={"img":img},timeout = 10)
