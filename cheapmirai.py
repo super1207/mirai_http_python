@@ -81,8 +81,8 @@ class BOT:
         print("response:","sendImageMessage",str(ret))
         return ret
     
-    def sendTempMessage(self,target,messageChain,quote = None):
-        req = {"sessionKey": self.sessionKey,"target": target,"messageChain":messageChain}
+    def sendTempMessage(self,qq,group,messageChain,quote = None):
+        req = {"sessionKey": self.sessionKey,"qq": qq,"group": group,"messageChain":messageChain}
         if quote != None:
             req["quote"] = quote
         print("request:","sendTempMessage",req)
