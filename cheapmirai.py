@@ -185,7 +185,19 @@ class BOT:
         ret = res.content
         print("response:","kick",str(ret))
         return ret
-
+    
+    def quit(self,target):
+        '''未测试'''
+        req = {
+            "sessionKey": self.sessionKey,
+            "target": target,
+            }
+        print("request:","quit",req)
+        res = requests.post(url = self.url+"/quit",json = req,timeout = 10)
+        ret = res.content
+        print("response:","quit",str(ret))
+        return ret
+    
     def groupConfigSet(self,target,config):
         req = {
             "sessionKey": self.sessionKey,
