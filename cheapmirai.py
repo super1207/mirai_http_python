@@ -1,7 +1,7 @@
 import requests,json
 import time
 import traceback
-import threading
+from concurrent import futures
 
 class BOT:
     def __init__(self,url,qq,authKey):
@@ -22,7 +22,7 @@ class BOT:
             return False
         print("response:","auth",res)
         if res['code'] != 0:
-            connecterrmsg = "error log:" + "get session failed"
+            self.connecterrmsg = "error log:" + "get session failed"
             print("error log:","get session failed")
         else:
             print("request:","verify",{"sessionKey": res['session'],"qq": self.qq})
@@ -33,7 +33,7 @@ class BOT:
                 self.sessionKey = res['session']
                 return True
             else:
-                connecterrmsg = "error log:" + "verify session failed"
+                self.connecterrmsg = "error log:" + "verify session failed"
                 print("error log:","verify session failed")
         return False
 
@@ -293,19 +293,8 @@ class BOT:
 
 
     def wait(self,timescale = 0.5):
-        class myThread (threading.Thread):
-            def __init__(self, funcvec, bot, msg):
-                threading.Thread.__init__(self)
-                self.funcvec = funcvec
-                self.bot = bot
-                self.msg = msg
-            def run(self):
-                for func in self.funcvec:
-                    try:
-                        func(self.bot,self.msg)
-                    except:
-                        traceback.print_exc()
         self.keepwait = True
+        pool = futures.ThreadPoolExecutor(max_workers=20)
         while self.keepwait:
             msgarr = []
             try:
@@ -323,9 +312,11 @@ class BOT:
                     pass
                 try:
                     if f != None:
-                        # f(self,msg)
-                        thread1 = myThread(f, self, msg)
-                        thread1.start()
+                        for func in f:
+                            try:
+                                pool.submit(func, self, msg)
+                            except:
+                                traceback.print_exc()
                 except:
                     traceback.print_exc()
             time.sleep(timescale)
@@ -334,7 +325,7 @@ class BOT:
         self.keepwait = False
 
     def addEventFun(self,msgtype,func):
-        if(hasattr(self,msgtype)): # 如果没有这个回调函数
+        if(hasattr(self,msgtype)):
             getattr(self,msgtype).append(func)
         else:
             setattr(self,msgtype,[])
