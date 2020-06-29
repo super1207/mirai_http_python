@@ -231,6 +231,52 @@ class BOT:
         print("response:","memberInfo",str(ret))
         return ret
 
+
+    def newFriendRequestEvent(self,eventId,fromId,groupId,operate,message):
+        req = {
+            "sessionKey": self.sessionKey,
+            "eventId": eventId,
+            "fromId": fromId,
+            "groupId": groupId,
+            "operate": operate,
+            "message": message
+            }
+        print("request:","newFriendRequestEvent",req)
+        res = requests.post(url = self.url+"/resp/newFriendRequestEvent",json = req,timeout = 10)
+        ret = res.content
+        print("response:","newFriendRequestEvent",str(ret))
+        return ret
+
+    def memberJoinRequestEvent(self,eventId,fromId,groupId,operate,message):
+        req = {
+            "sessionKey": self.sessionKey,
+            "eventId": eventId,
+            "fromId": fromId,
+            "groupId": groupId,
+            "operate": operate,
+            "message": message
+            }
+        print("request:","memberJoinRequestEvent",req)
+        res = requests.post(url = self.url+"/resp/memberJoinRequestEvent",json = req,timeout = 10)
+        ret = res.content
+        print("response:","memberJoinRequestEvent",str(ret))
+        return ret
+    
+    def botInvitedJoinGroupRequestEvent(self,eventId,fromId,groupId,operate,message):
+        req = {
+            "sessionKey": self.sessionKey,
+            "eventId": eventId,
+            "fromId": fromId,
+            "groupId": groupId,
+            "operate": operate,
+            "message": message
+            }
+        print("request:","botInvitedJoinGroupRequestEvent",req)
+        res = requests.post(url = self.url+"/resp/botInvitedJoinGroupRequestEvent",json = req,timeout = 10)
+        ret = res.content
+        print("response:","botInvitedJoinGroupRequestEvent",str(ret))
+        return ret
+
     def memberInfoGet(self,target,memberId):
         req = "/memberInfo?sessionKey="+self.sessionKey+"&target=" + str(target)+"&memberId=" + str(memberId)
         print("request:","memberInfo",req)
@@ -243,6 +289,7 @@ class BOT:
         res = requests.get(url = self.url+"/fetchMessage?sessionKey="+self.sessionKey+"&count="+str(count),timeout = 10)
         ret = res.content
         return ret
+
 
 
     def wait(self,timescale = 0.5):
