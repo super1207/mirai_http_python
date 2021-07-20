@@ -1,4 +1,5 @@
 # mirai_http_python
+# [暂停维护]
 一个简单的用于和[mirai](https://github.com/mamoe/mirai)QQ机器人框架的HTTP接口对接的python框架
 * [x] 认证相关API
 * [x] 消息相关API  
